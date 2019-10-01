@@ -24,18 +24,18 @@
     <div class="container container-table">
         <div class="row vertical-center-row">
             <div class="text-center col-md-4 col-md-offset-4">
-                <h2><a href='https://www.alphavantage.co/'>Alpha Vantage Data</a></h2>
+                <h2><a href='https://www.alphavantage.co/' target="_blank">Alpha Vantage Data</a></h2>
                 <form>
                     <div class="form-inline">
                         API Key
-                        <input type="text" class="form-control" id="api-key" value="demo">
+                        <input type="text" class="form-control" id="api-key" value="Enter key here...">
                     </div>
                 </form>
-                <!-- <h3>Stock ticker Data</h3>
+                <!-- <h3>Stock symbol Data</h3>
                 <form>
-                    Comma Separated List of Tickers<br>
-                    <h6>Each ticker counts as an API call</h6>
-                    <input type="text" class="form-control" id="ticker-list" value="AAPL,GOOGL,MSFT...">
+                    Comma Separated List of symbol\s<br>
+                    <h6>Each symbol\ counts as an API call</h6>
+                    <input type="text" class="form-control" id="symbol-list" value="AAPL,GOOGL,MSFT...">
                     <h4>Please select the cadence</h4>
                     <input type="radio" name="food" /> Daily<br />
                     <input type="radio" name="food" /> Daily Adjusted<br />
@@ -49,13 +49,13 @@
                     data!</button> -->
                 <form>
                     <div class="form-inline">
-                        <label for="ticker-list" class="text-center">Ticker List</label>
+                        <label for="symbol-list" class="text-center">Symbol List</label>
                     </div>
                     <div class="form-inline">
-                        <input type="text" class="form-control" id="ticker-list" value="MSFT,GOOGL,AAPL">
+                        <input type="text" class="form-control" id="symbol-list" value="MSFT">
                     </div>
                 </form>
-                <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Ticker
+                <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Symbol
                     Data</button>
                 <div id="errorMsg"></div>
                 <div id='output'></div>
