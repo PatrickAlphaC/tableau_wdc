@@ -114,4 +114,51 @@
             }
         });
     });
+
+    // For the intraday option
+    $(document).ready(function () {
+        $("#function-key").change(function () {
+            var function_key = $('#function-key').val();
+            if (function_key === "TIME_SERIES_INTRADAY") {
+                $("#intraday-addon").append("<label for=\"intraday-cadence\" id=\"cadence-label\" class=\" text-left\">\
+                    Intraday Cadence\
+                </label>");
+                $("#intraday-addon").append("<select name=\"intraday-cadence\" id=\"intraday-cadence\">\
+                    <option Value=\"1min\">1min</option>\
+                    <option Value=\"5min\">5min</option>\
+                    <option Value=\"15min\">15min</option>\
+                    <option Value=\"30min\">30min</option>\
+                    <option Value=\"60min\">60min</option>\
+                </select>");
+            }
+            else if (function_key !== "TIME_SERIES_INTRADAY") {
+                $("#intraday-cadence").remove();
+                $("#cadence-label").remove()
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $("#function-key-fx").change(function () {
+            var function_key_fx = $('#function-key-fx').val();
+            if (function_key_fx === "FX_INTRADAY") {
+                $("#intraday-addon-fx").append("<label for=\"intraday-cadence-fx\" id=\"cadence-label-fx\" class=\"text-left\">\
+                    Intraday Cadence\
+                </label>");
+                $("#intraday-addon-fx").append("<select name=\"intraday-cadence-fx\" id=\"intraday-cadence-fx\">\
+                    <option Value=\"1min\">1min</option>\
+                    <option Value=\"5min\">5min</option>\
+                    <option Value=\"15min\">15min</option>\
+                    <option Value=\"30min\">30min</option>\
+                    <option Value=\"60min\">60min</option>\
+                </select >\
+                    <div id=\"crypto-disclaimer\">*Intraday not availble for crypto</div>");
+            }
+            else if (function_key_fx !== "TIME_SERIES_INTRADAY") {
+                $("#intraday-cadence-fx").remove();
+                $("#cadence-label-fx").remove();
+                $("#crypto-disclaimer").remove();
+            }
+        });
+    });
 })();

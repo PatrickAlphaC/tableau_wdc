@@ -1,0 +1,60 @@
+
+.logo{
+  max-width: 50px;
+  max-height: 50px
+}
+
+body {
+  margin: 0rem 0;
+  background-color: #060022;
+  font-family: 'Roboto'
+}
+
+.real-body{
+  background-color: white;
+}
+ 
+.dropdown-container{
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%; /* Bottom of button */
+  right: 0;
+}
+
+.disclaimer{
+  font-size: 1rem;
+}
+
+.wide-input{
+  width: 100% !important;
+}
+
+#free-key{
+  color: red;
+  text-decoration: underline;
+}
+
+#mainNav {
+  min-height: 56px;
+  background-color: #060022;
+  color: gray;
+  font-family: 'Roboto'
+}
+
+#CTA{
+  color: #42DCA3;
+}
+
+#head-title a:link{
+  color:gray;
+}
+#head-title a:visited{
+  color:gray;
+}
+
+
+
+
