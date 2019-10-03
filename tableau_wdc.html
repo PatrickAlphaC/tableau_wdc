@@ -1,0 +1,224 @@
+<html>
+
+<head>
+    <title>Alpha Vantage Web Data Connector</title>
+    <meta http-equiv="Cache-Control" content="no-store" />
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Tableau Javascript -->
+    <script src="https://connectors.tableau.com/libs/tableauwdc-2.3.latest.js" type="text/javascript"></script>
+    <!-- Logic for collecting data -->
+    <script src="tableau_wdc.js" type="text/javascript"></script>
+
+    <!-- The order above is important! -->
+
+    <!-- Bootstrap latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+        integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+        crossorigin="anonymous"></script>
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="img/favicon.ico">
+</head>
+<!-- <nav class="navbar" id="mainNav">
+    <div class="container">
+        <a href='https://www.alphavantage.co/'><img src='img/alpha_vantage_logo.png' class='logo'></a>
+    </div>
+</nav> -->
+
+<body id="page-top">
+    <nav class="navbar" id="mainNav">
+        <div class="text-center col-md-4 col-md-offset-4">
+            <h2 id="head-title">
+                <a href='https://www.alphavantage.co/' target=" _blank"><img src='img/favicon.ico' class='logo'></a>
+                <a href='https://www.alphavantage.co/' target="_blank">ALPHA VANTAGE</a>
+            </h2>
+            <div class="row">
+                Tableau Web Data Connector
+            </div>
+            <div class="row">
+                <form>
+                    <div class="form-inline">
+                        API Key:
+                        <input type="text" class="form-control" id="api-key" placeholder="Enter key here...">
+                    </div>
+                </form>
+                <h4 id="CTA">
+                    No API Key? Get one <a id="free-key" href="https://www.alphavantage.co/support/#api-key"
+                        target="_blank">free
+                        here</a>
+                </h4>
+            </div>
+        </div>
+    </nav>
+
+    <!-- <div class="container container-table">
+    </div> -->
+
+    <div class="container-fluid real-body">
+        <div class="row">
+            <div class="col-md-2 col-sm-1">
+                <!-- Blank div for spacing-->
+            </div>
+            <div class="col-md-4 text-center col-sm-5">
+                <h2><a href="https://www.alphavantage.co/documentation/#time-series-data" target="_blank">Stock Time
+                        Series</a> </h2>
+                <form>
+                    <label for="function-key" class="text-left">Data type</label>
+                    <select name="function-key" id="function-key">
+                        <option Value="TIME_SERIES_INTRADAY">Intraday</option>
+                        <option Value="TIME_SERIES_DAILY">Daily</option>
+                        <option Value="TIME_SERIES_DAILY_ADJUSTED">Daily Adjusted</option>
+                        <option Value="TIME_SERIES_WEEKLY">Weekly</option>
+                        <option Value="TIME_SERIES_WEEKLY_ADJUSTED">Weekly Adjusted</option>
+                        <option Value="TIME_SERIES_MONTHLY">Monthly</option>
+                        <option Value="TIME_SERIES_MONTHLY_ADJUSTED">Monthly Adjusted</option>
+                    </select>
+                    <div id="intraday-addon">
+                        <label for="intraday-cadence" id="cadence-label" class=" text-left">Intraday Cadence</label>
+                        <select name="intraday-cadence" id="intraday-cadence">
+                            <option Value="1min">1min</option>
+                            <option Value="5min">5min</option>
+                            <option Value="15min">15min</option>
+                            <option Value="30min">30min</option>
+                            <option Value="60min">60min</option>
+                        </select>
+                    </div>
+                    <div class="form-inline">
+                        <label for="symbol-list" class="text-center">Symbol List</label>
+                    </div>
+                    <div class="form-inline">
+                        <input type="text" class="form-control" id="symbol-list" placeholder="MSFT,AAPL,GOOGL">
+                    </div>
+                    <button type="button" id="stock-submit-btn" class="btn btn-success" style="margin: 10px;">Get Stock
+                        Data</button>
+                </form>
+                <div id='stock-output'></div>
+            </div>
+            <div class="col-md-4 col-sm-5 text-center ">
+                <h2><a href="https://www.alphavantage.co/documentation/#fx" target="_blank">Forex (FX)</a> and <a
+                        href="https://www.alphavantage.co/documentation/#digital-currency" target="_blank">Crypto</a>
+                </h2>
+                <form>
+                    <label for="function-key-fx" class="text-left">Data type</label>
+                    <select name="function-key-fx" id="function-key-fx">
+                        <option Value="FX_INTRADAY">Intraday</option>
+                        <option Value="FX_DAILY">Daily</option>
+                        <option Value="FX_WEEKLY">Weekly</option>
+                        <option Value="FX_MONTHLY">Monthly</option>
+                    </select>
+                    <div id="intraday-addon-fx">
+                        <label for="intraday-cadence-fx" id="cadence-label-fx" class=" text-left">Intraday
+                            Cadence</label>
+                        <select name="intraday-cadence-fx" id="intraday-cadence-fx">
+                            <option Value="1min">1min</option>
+                            <option Value="5min">5min</option>
+                            <option Value="15min">15min</option>
+                            <option Value="30min">30min</option>
+                            <option Value="60min">60min</option>
+                        </select>
+                        <div id="crypto-disclaimer" class="disclaimer">*Intraday not availble for crypto</div>
+                    </div>
+                    <div class="form-inline">
+                        <label for="from-currency" class="text-center">From Currency</label>
+                    </div>
+                    <div class="form-inline">
+                        <input type="text" class="form-control" id="from-currency" placeholder="USD">
+                    </div>
+                    <div class="form-inline">
+                        <label for="to-currency" class="text-center">To Currency</label>
+                    </div>
+                    <div class="form-inline">
+                        <input type="text" class="form-control" id="to-currency" placeholder="BTC">
+                    </div>
+                    <button type="button" id="forex-submit-btn" class="btn btn-success" style="margin: 10px;">Get Forex
+                        Data</button>
+                </form>
+                <div id='forex-output'></div>
+            </div>
+            <div class="col-md-2 col-sm-1">
+                <!-- Blank div for spacing-->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-1">
+                <!-- Blank div for spacing-->
+            </div>
+            <div class="col-md-4 col-sm-5 text-center">
+                <h2><a href="https://www.alphavantage.co/documentation/#technical-indicators" target="_blank">Technical
+                        Indicators</a>
+                </h2>
+                <form>
+                    <div class="form-inline">
+                        <label for="symbol-list-indicators" class="text-center">Symbol List</label>
+                    </div>
+                    <div class="form-inline">
+                        <input type="text" class="form-control" id="symbol-list-indicators"
+                            placeholder="MSFT,AAPL,GOOGL">
+                    </div>
+                    <div class="form-inline">
+                        <label for="technical-indicator" class="text-center">Indicator Shorthand</label>
+                    </div>
+                    <div class="form-inline">
+                        <input type="text" class="form-control" id="technical-indicator" placeholder="SMA">
+                    </div>
+                    <div class="form-inline">
+                        <label for="indicator-arguments" class="text-center">Indicator Arguments</label>
+                    </div>
+                    <div class="form-inline">
+                        <input type="text" class="form-control wide-input"
+                            placeholder="&interval=weekly&time_period=10&series_type=open" id="indicator-arguments">
+                    </div>
+                    <div id="disclaimer" class="disclaimer">Please see the <a
+                            href="https://www.alphavantage.co/documentation/" target="_blank">documentation</a> for
+                        more information about arguments.
+                    </div>
+                    <button type="button" id="indicator-submit-btn" class="btn btn-success" style="margin: 10px;">Get
+                        Indicator
+                        Data</button>
+                </form>
+                <div id='indicator-output'></div>
+            </div>
+            <div class="col-md-4 col-sm-5 text-center">
+                <h2><a href="https://www.alphavantage.co/documentation/#sector-information" target="_blank">Sector
+                        Performance</a></h2>
+                <form>
+                    <button type="button" id="sector-submit-btn" class="btn btn-success" style="margin: 10px;">Get
+                        Sector
+                        Performance Data</button>
+                </form>
+                <div id='sector-output'></div>
+            </div>
+            <div class="col-md-2 col-sm-1">
+                <!-- Blank div for spacing-->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2>Custom API Query</h2>
+                <form>
+                    <div class="form-inline">
+                        <input type="text" class="form-control wide-input" id="custom-query"
+                            placeholder="https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=MSFT&interval=5min&outputsize=full&apikey=demo">
+                    </div>
+                    <!-- <div>The start of all queries is: https://www.alphavantage.co/query?<br> Define
+                        parameters with: parameter=value (Ex: symbol=MSFT) <br>Use ampersands between parameters
+                        <br>Full example:<br>
+                        https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=MSFT&interval=5min&outputsize=full&apikey=demo
+                    </div> -->
+                    <button type="button" id="query-submit-btn" class="btn btn-success" style="margin: 10px;">Get
+                        Query</button>
+                </form>
+                <div id='query-output'></div>
+            </div>
+        </div>
+
+
+</body>
+
+</html>
