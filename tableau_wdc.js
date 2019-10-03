@@ -72,11 +72,65 @@
                     alias: "close",
                     dataType: tableau.dataTypeEnum.float
                 }];
-                // Have TODO for crypto too - symbol & market
                 list_of_schemas.push({
                     id: query_data.from_currency + "_" + query_data.to_currency,
                     alias: "Timeseries for " + query_data.from_currency + "-" + query_data.to_currency,
                     columns: forex_columns,
+                })
+                break;
+            case "crypto":
+                var crypto_columns = [{
+                    id: "currency_pair",
+                    alias: "Currency Pair",
+                    dataType: tableau.dataTypeEnum.string
+                }, {
+                    id: "timestamp",
+                    dataType: tableau.dataTypeEnum.datetime
+                }, {
+                    id: "open_" + query_data.to_currency,
+                    alias: "open for market",
+                    dataType: tableau.dataTypeEnum.float
+                }, {
+                    id: "open_USD",
+                    alias: "open for USD",
+                    dataType: tableau.dataTypeEnum.float
+                }, {
+                    id: "high_" + query_data.to_currency,
+                    alias: "high for market",
+                    dataType: tableau.dataTypeEnum.float
+                }, {
+                    id: "high_USD",
+                    alias: "high for USD",
+                    dataType: tableau.dataTypeEnum.float
+                }, {
+                    id: "low_" + query_data.to_currency,
+                    alias: "low for market",
+                    dataType: tableau.dataTypeEnum.float
+                }, {
+                    id: "low_USD",
+                    alias: "low for USD",
+                    dataType: tableau.dataTypeEnum.float
+                }, {
+                    id: "close_" + query_data.to_currency,
+                    alias: "close for market",
+                    dataType: tableau.dataTypeEnum.float
+                }, {
+                    id: "close_USD",
+                    alias: "close for USD",
+                    dataType: tableau.dataTypeEnum.float
+                }, {
+                    id: "volume",
+                    alias: "volume",
+                    dataType: tableau.dataTypeEnum.float
+                }, {
+                    id: "marketcap_USD",
+                    alias: "market cap",
+                    dataType: tableau.dataTypeEnum.float
+                }];
+                list_of_schemas.push({
+                    id: query_data.from_currency + "_" + query_data.to_currency,
+                    alias: "Timeseries for " + query_data.from_currency + "-" + query_data.to_currency,
+                    columns: crypto_columns,
                 })
                 break;
             case "technical-indicator":
@@ -146,11 +200,15 @@
     $(document).ready(function () {
         $("#forex-submit-btn").click(function () {
             if (is_valid_inputs("#forex-submit-btn")) {
+                var type = "forex";
+                if ($('#function-key-fx').val().indexOf("DIGITAL") !== -1) {
+                    type = "crypto"
+                }
                 var query_data = {
                     from_currency: $('#from-currency').val().trim().replace(/\s/g, ''),
                     to_currency: $('#to-currency').val().trim().replace(/\s/g, ''),
                     api_key: $('#api-key').val().trim().replace(/\s/g, ''),
-                    type: "forex",
+                    type: type,
                     function_key: $('#function-key-fx').val().trim(),
                     cadence: $('#intraday-cadence-fx').val().trim(),
                 };
@@ -292,6 +350,15 @@ $(document).ready(function () {
             $("#cadence-label-fx").hide();
             $("#crypto-disclaimer").hide();
         }
+        if (function_key_fx.indexOf("DIGITAL") !== -1) {
+            document.getElementById("from-currency-label").innerHTML = "Digital currency symbol";
+            document.getElementById("to-currency-label").innerHTML = "Physical currency market";
+            document.getElementById("from-currency").placeholder = "BTC";
+        } else {
+            document.getElementById("from-currency-label").innerHTML = "From Currency";
+            document.getElementById("to-currency-label").innerHTML = "To Currency";
+            document.getElementById("from-currency").placeholder = "EUR";
+        }
     });
 });
 
@@ -337,6 +404,38 @@ function map_data_to_schema(query_data, resp, tableinfo) {
             }
             return table_data;
             break;
+        case "crypto":
+            var open1 = "open_" + query_data.to_currency;
+            var open2 = "open_USD";
+            var high1 = "high_" + query_data.to_currency;
+            var high2 = "high_USD";
+            var low1 = "low_" + query_data.to_currency;
+            var low2 = "low_USD";
+            var close1 = "close_" + query_data.to_currency;
+            var close2 = "close_USD";
+            for (data_metadata in resp) {
+                if (index == 1) {
+                    for (timeseries in resp[data_metadata]) {
+                        table_data.push({
+                            "currency_pair": query_data.from_currency + "-" + query_data.to_currency,
+                            "timestamp": timeseries,
+                            [open1]: resp[data_metadata][timeseries]["1a. open (" + query_data.to_currency + ")"],
+                            [open2]: resp[data_metadata][timeseries]["1b. open (USD)"],
+                            [high1]: resp[data_metadata][timeseries]["2a. high (" + query_data.to_currency + ")"],
+                            [high2]: resp[data_metadata][timeseries]["2b. high (USD)"],
+                            [low1]: resp[data_metadata][timeseries]["3a. low (" + query_data.to_currency + ")"],
+                            [low2]: resp[data_metadata][timeseries]["3b. low (USD)"],
+                            [close1]: resp[data_metadata][timeseries]["4a. close (" + query_data.to_currency + ")"],
+                            [close2]: resp[data_metadata][timeseries]["4b. close (USD)"],
+                            "volume": resp[data_metadata][timeseries]["5. volume"],
+                            "market cap": resp[data_metadata][timeseries]["6. market cap (USD)"],
+                        });
+                    }
+                }
+                index = index + 1;
+            }
+            return table_data;
+            break;
         case "technical-indicator":
             for (data_metadata in resp) {
                 if (index == 1) {
@@ -368,7 +467,14 @@ function create_apicall(tableInfo, query_data) {
             return baseurl + query_data.function_key + "&symbol=" + tableInfo.id + cadence + "&apikey=" + query_data.api_key;
             break;
         case "forex":
-            return baseurl + query_data.function_key + "&from_symbol=" + query_data.from_currency + "&to_symbol=" + query_data.to_currency + cadence + "&apikey=" + query_data.api_key;
+            var from_symbol = "&from_symbol=";
+            var to_symbol = "&to_symbol=";
+            return baseurl + query_data.function_key + from_symbol + query_data.from_currency + to_symbol + query_data.to_currency + cadence + "&apikey=" + query_data.api_key;
+            break;
+        case "crypto":
+            var from_symbol = "&symbol=";
+            var to_symbol = "&market=";
+            return baseurl + query_data.function_key + from_symbol + query_data.from_currency + to_symbol + query_data.to_currency + cadence + "&apikey=" + query_data.api_key;
             break;
         case "technical-indicator":
             return baseurl + query_data.function_key + "&symbol=" + tableInfo.id.split("_")[0] + query_data.indicator_arguments + "&apikey=" + query_data.api_key;

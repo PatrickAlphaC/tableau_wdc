@@ -107,10 +107,13 @@
                 <form>
                     <label for="function-key-fx" class="text-left">Data type</label>
                     <select name="function-key-fx" id="function-key-fx">
-                        <option Value="FX_INTRADAY">Intraday</option>
-                        <option Value="FX_DAILY">Daily</option>
-                        <option Value="FX_WEEKLY">Weekly</option>
-                        <option Value="FX_MONTHLY">Monthly</option>
+                        <option Value="FX_INTRADAY">FX Intraday</option>
+                        <option Value="FX_DAILY">FX Daily</option>
+                        <option Value="FX_WEEKLY">FX Weekly</option>
+                        <option Value="FX_MONTHLY">FX Monthly</option>
+                        <option Value="DIGITAL_CURRENCY_DAILY">Crypto Daily</option>
+                        <option Value="DIGITAL_CURRENCY_WEEKLY">Crypto Weekly</option>
+                        <option Value="DIGITAL_CURRENCY_MONTHLY">Crypto Monthly</option>
                     </select>
                     <div id="intraday-addon-fx">
                         <label for="intraday-cadence-fx" id="cadence-label-fx" class=" text-left">Intraday
@@ -125,16 +128,16 @@
                         <div id="crypto-disclaimer" class="disclaimer">*Intraday not availble for crypto</div>
                     </div>
                     <div class="form-inline">
-                        <label for="from-currency" class="text-center">From Currency</label>
+                        <label for="from-currency" class="text-center" id="from-currency-label">From Currency</label>
                     </div>
                     <div class="form-inline">
-                        <input type="text" class="form-control" id="from-currency" placeholder="USD">
+                        <input type="text" class="form-control" id="from-currency" placeholder="EUR">
                     </div>
                     <div class="form-inline">
-                        <label for="to-currency" class="text-center">To Currency</label>
+                        <label for="to-currency" class="text-center" id="to-currency-label">To Currency</label>
                     </div>
                     <div class="form-inline">
-                        <input type="text" class="form-control" id="to-currency" placeholder="BTC">
+                        <input type="text" class="form-control" id="to-currency" placeholder="USD">
                     </div>
                     <button type="button" id="forex-submit-btn" class="btn btn-success" style="margin: 10px;">Get Forex
                         Data</button>
