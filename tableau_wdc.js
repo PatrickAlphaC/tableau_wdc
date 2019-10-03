@@ -72,7 +72,7 @@
                     alias: "close",
                     dataType: tableau.dataTypeEnum.float
                 }];
-                // Have to do for crypto too - symbol & market
+                // Have TODO for crypto too - symbol & market
                 list_of_schemas.push({
                     id: query_data.from_currency + "_" + query_data.to_currency,
                     alias: "Timeseries for " + query_data.from_currency + "-" + query_data.to_currency,
