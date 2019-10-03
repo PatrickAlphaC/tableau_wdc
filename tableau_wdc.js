@@ -460,30 +460,26 @@ function map_data_to_schema(query_data, resp, tableinfo) {
             break;
         case "crypto":
             var open1 = "open_" + query_data.to_currency;
-            var open2 = "open_USD";
             var high1 = "high_" + query_data.to_currency;
-            var high2 = "high_USD";
             var low1 = "low_" + query_data.to_currency;
-            var low2 = "low_USD";
             var close1 = "close_" + query_data.to_currency;
-            var close2 = "close_USD";
             for (data_metadata in resp) {
                 if (index == 1) {
                     for (timeseries in resp[data_metadata]) {
-                        table_data.push({
-                            "currency_pair": query_data.from_currency + "-" + query_data.to_currency,
-                            "timestamp": timeseries,
-                            [open1]: resp[data_metadata][timeseries]["1a. open (" + query_data.to_currency + ")"],
-                            [open2]: resp[data_metadata][timeseries]["1b. open (USD)"],
-                            [high1]: resp[data_metadata][timeseries]["2a. high (" + query_data.to_currency + ")"],
-                            [high2]: resp[data_metadata][timeseries]["2b. high (USD)"],
-                            [low1]: resp[data_metadata][timeseries]["3a. low (" + query_data.to_currency + ")"],
-                            [low2]: resp[data_metadata][timeseries]["3b. low (USD)"],
-                            [close1]: resp[data_metadata][timeseries]["4a. close (" + query_data.to_currency + ")"],
-                            [close2]: resp[data_metadata][timeseries]["4b. close (USD)"],
-                            "volume": resp[data_metadata][timeseries]["5. volume"],
-                            "market cap": resp[data_metadata][timeseries]["6. market cap (USD)"],
-                        });
+                        var putin = {};
+                        putin["currency_pair"] = query_data.from_currency + "-" + query_data.to_currency;
+                        putin["timestamp"] = timeseries;
+                        putin[open1] = resp[data_metadata][timeseries]["1a. open (" + query_data.to_currency + ")"];
+                        putin["open_USD"] = resp[data_metadata][timeseries]["1b. open (USD)"];
+                        putin[high1] = resp[data_metadata][timeseries]["2a. high (" + query_data.to_currency + ")"];
+                        putin["high_USD"] = resp[data_metadata][timeseries]["2b. high (USD)"];
+                        putin[low1] = resp[data_metadata][timeseries]["3a. low (" + query_data.to_currency + ")"];
+                        putin["low_USD"] = resp[data_metadata][timeseries]["3b. low (USD)"];
+                        putin[close1] = resp[data_metadata][timeseries]["4a. close (" + query_data.to_currency + ")"];
+                        putin["close_USD"] = resp[data_metadata][timeseries]["4b. close (USD)"];
+                        putin["volume"] = resp[data_metadata][timeseries]["5. volume"];
+                        putin["marketcap_USD"] = resp[data_metadata][timeseries]["6. market cap (USD)"];
+                        table_data.push(putin);
                     }
                 }
                 index = index + 1;
@@ -493,13 +489,20 @@ function map_data_to_schema(query_data, resp, tableinfo) {
         case "technical-indicator":
             for (data_metadata in resp) {
                 if (index == 1) {
+                    // WHY CAN'T I DO THIS?? CUZ TABLEAU IS RUN ON OOOOLLLLLDDDD JAVASCRIPT
                     for (timeseries in resp[data_metadata]) {
-                        table_data.push({
-                            "symbol": tableinfo.id.split("_")[0],
-                            "timestamp": timeseries,
-                            [query_data.function_key]: resp[data_metadata][timeseries][query_data.function_key],
-                            "arguments": query_data.indicator_arguments,
-                        });
+                        // table_data.push({
+                        //     "symbol": tableinfo.id.split("_")[0],
+                        //     "timestamp": timeseries,
+                        //     [query_data.function_key]: resp[data_metadata][timeseries][query_data.function_key],
+                        //     "arguments": query_data.indicator_arguments,
+                        // });
+                        var putin = {};
+                        putin["symbol"] = tableinfo.id.split("_")[0];
+                        putin["timestamp"] = timeseries;
+                        putin[query_data.function_key] = resp[data_metadata][timeseries][query_data.function_key];
+                        putin["arguments"] = query_data.indicator_arguments;
+                        table_data.push(putin);
                     }
                 }
                 index = index + 1;
