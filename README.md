@@ -8,9 +8,13 @@ Web Data connector SDK information below
 I'm a little newer to javascript and npm, but I think this is the basic gist.
 
 To run start
+
 `git clone https://github.com/PatrickAlphaVantage/tableau_wdc.git`
+
 and then in that repo run
+
 `npm start`
+
 After that, you can open simulator on your localhost, and hit "Start interactive Phase" to test it out.
 Have fun!
 
