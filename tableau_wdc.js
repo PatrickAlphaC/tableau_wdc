@@ -160,6 +160,9 @@
                 break;
             case "sector":
                 var sector_columns = [{
+                    id: "rank",
+                    dataType: tableau.dataTypeEnum.string,
+                }, {
                     id: "energy",
                     dataType: tableau.dataTypeEnum.float,
                 }, {
@@ -192,9 +195,6 @@
                 }, {
                     id: "financials",
                     dataType: tableau.dataTypeEnum.float,
-                }, {
-                    id: "rank",
-                    dataType: tableau.dataTypeEnum.string,
                 }];
                 list_of_schemas.push({
                     id: "sector_performance",
@@ -227,7 +227,6 @@
     myConnector.getData = function (table, doneCallback) {
         var query_data = JSON.parse(tableau.connectionData);
         apicall = create_apicall(table.tableInfo, query_data);
-        console.log(apicall);
         $.getJSON(apicall, function (resp) {
             var tableData = [];
             var index = 0;
