@@ -101,8 +101,9 @@
                         alias: query_data.function_key + " for " + symbol_list[symbol],
                         columns: indicator_columns,
                     })
-                    break;
                 }
+                break;
+
         }
         // Forex just replace symbol with currency pair in format USD-BTZ & removevolume
         // Tech indicator just use symbol, indicator, and datetimestamp
@@ -337,14 +338,13 @@ function map_data_to_schema(query_data, resp, tableinfo) {
             return table_data;
             break;
         case "technical-indicator":
-            var function_key = query_data.function_key;
             for (data_metadata in resp) {
                 if (index == 1) {
                     for (timeseries in resp[data_metadata]) {
                         table_data.push({
                             "symbol": tableinfo.id.split("_")[0],
                             "timestamp": timeseries,
-                            function_key: resp[data_metadata][timeseries][function_key],
+                            [query_data.function_key]: resp[data_metadata][timeseries][query_data.function_key],
                             "arguments": query_data.indicator_arguments,
                         });
                     }
