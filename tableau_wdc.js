@@ -511,22 +511,20 @@ function map_data_to_schema(query_data, resp, tableinfo) {
         case "sector":
             for (rank in resp) {
                 if (index > 0) {
-                    for (sector in resp[rank]) {
-                        table_data.push({
-                            "rank": rank,
-                            "energy": resp[rank]["Energy"],
-                            "information_technology": resp[rank]["Information Technology"],
-                            "real_estate": resp[rank]["Real Estate"],
-                            "health_care": resp[rank]["Health Care"],
-                            "communication_services": resp[rank]["Communication Services"],
-                            "consumer_staples": resp[rank]["Consumer Staples"],
-                            "industrials": resp[rank]["Industrials"],
-                            "consumer_discretionary": resp[rank]["Consumer Discretionary"],
-                            "materials": resp[rank]["Materials"],
-                            "utilities": resp[rank]["Utilities"],
-                            "financials": resp[rank]["Financials"],
-                        });
-                    }
+                    table_data.push({
+                        "rank": rank,
+                        "energy": resp[rank]["Energy"],
+                        "information_technology": resp[rank]["Information Technology"],
+                        "real_estate": resp[rank]["Real Estate"],
+                        "health_care": resp[rank]["Health Care"],
+                        "communication_services": resp[rank]["Communication Services"],
+                        "consumer_staples": resp[rank]["Consumer Staples"],
+                        "industrials": resp[rank]["Industrials"],
+                        "consumer_discretionary": resp[rank]["Consumer Discretionary"],
+                        "materials": resp[rank]["Materials"],
+                        "utilities": resp[rank]["Utilities"],
+                        "financials": resp[rank]["Financials"],
+                    });
                 }
                 index = index + 1;
             }

@@ -33,27 +33,37 @@
 
 <body id="page-top">
     <nav class="navbar" id="mainNav">
-        <div class="text-center col-md-4 col-md-offset-4">
-            <h2 id="head-title">
-                <a href='https://www.alphavantage.co/' target=" _blank"><img src='img/favicon.ico' class='logo'></a>
-                <a href='https://www.alphavantage.co/' target="_blank">ALPHA VANTAGE</a>
-            </h2>
-            <div class="row">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-1 col-sm-offset-1 col-sm-5">
+                <h2 id="head-title" class="text-left">
+                    <a href='https://www.alphavantage.co/' target=" _blank"><img src='img/favicon.ico' class='logo'></a>
+                    <a href='https://www.alphavantage.co/' target="_blank">ALPHA VANTAGE</a>
+                </h2>
+            </div>
+            <div class="col-md-4 col-md-offset-3 col-sm-3 col-sm-offset-2">
+                <h4 class="text-center" id="CTA">
+                    <label for="free-key" class="text-center">No API Key?</label>
+                    <a id="free-key" href="https://www.alphavantage.co/support/#api-key" target="_blank">
+                        <button type="button" class="btn btn-success" style="margin: 10px;">Get Free API
+                            Key here</button></a>
+                </h4>
+            </div>
+        </div>
+        <div class="row" class="text-center">
+            <div class="col-md-4 col-md-offset-4 text-center">
                 Tableau Web Data Connector
             </div>
-            <div class="row">
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4 text-center">
                 <form>
                     <div class="form-inline">
                         API Key:
                         <input type="text" class="form-control" id="api-key" placeholder="Enter key here...">
                     </div>
-                </form>
-                <h4 id="CTA">
-                    No API Key? Get one <a id="free-key" href="https://www.alphavantage.co/support/#api-key"
-                        target="_blank">free
-                        here</a>
-                </h4>
             </div>
+            </form>
+
         </div>
     </nav>
 
@@ -222,8 +232,19 @@
                 <div id='query-output'></div>
             </div>
         </div>-->
-
-
+        <!-- Footer -->
+        <div class="row">
+            <footer class="bg-black small text-center text-white-50">
+                <div class="container">
+                    Copyright &copy; Alpha Vantage 2019
+                </div>
+                <div class="container">
+                    If you're hitting API call thresholds please visit <a href="https://www.alphavantage.co/premium/"
+                        target="_blank">Premium Membership</a> to increase your API
+                    calls/minute
+                </div>
+            </footer>
+        </div>
 </body>
 
 </html>
