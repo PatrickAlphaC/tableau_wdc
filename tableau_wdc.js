@@ -8,6 +8,7 @@
         var list_of_schemas = new Array();
         query_data = JSON.parse(tableau.connectionData);
 
+
         switch (JSON.parse(tableau.connectionData).type) {
             case "stock-timeseries":
                 var symbol_list = query_data.symbol_list.split(",");
@@ -157,6 +158,62 @@
                     })
                 }
                 break;
+            case "sector":
+                var sector_columns = [{
+                    id: "energy",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "information_technology",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "real_estate",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "health_care",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "communication_services",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "consumer_staples",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "industrials",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "consumer_discretionary",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "materials",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "utilities",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "financials",
+                    dataType: tableau.dataTypeEnum.float,
+                }, {
+                    id: "rank",
+                    dataType: tableau.dataTypeEnum.string,
+                }];
+                list_of_schemas.push({
+                    id: "sector_performance",
+                    alias: "US Sector Performance (realtime & historical)",
+                    columns: sector_columns,
+                })
+                break;
+            default:
+                var custom_columns = [{
+                    id: "TBD",
+                    alias: "TBD",
+                    dataType: tableau.dataTypeEnum.string
+                }];
+                list_of_schemas.push({
+                    id: "custom_query",
+                    alias: "Custom Query",
+                    columns: custom_columns,
+                })
+                break;
 
         }
         // Forex just replace symbol with currency pair in format USD-BTZ & removevolume
@@ -170,11 +227,12 @@
     myConnector.getData = function (table, doneCallback) {
         var query_data = JSON.parse(tableau.connectionData);
         apicall = create_apicall(table.tableInfo, query_data);
+        console.log(apicall);
         $.getJSON(apicall, function (resp) {
             var tableData = [];
             var index = 0;
             // Could and should this code be refactored?.... Yes.... Yes it should be 
-            var table_data = map_data_to_schema(query_data, resp, table.tableInfo);
+            var table_data = map_data_to_schema(query_data, resp, table.tableInfo, myConnector);
             table.appendRows(table_data);
             doneCallback();
         });
@@ -252,6 +310,7 @@
                     custom_query: $('#custom-query').val().trim().replace(/\s/g, ''),
                     api_key: $('#api-key').val().trim().replace(/\s/g, ''),
                     type: "custom-query",
+                    function_key: "NULL",
                 };
                 var connection_name = "Custom Query";
                 send_tableau(query_data, connection_name);
@@ -306,10 +365,6 @@ function is_valid_inputs(button_name) {
             }
             break;
         case "#query-submit-btn":
-            if (document.getElementById("api-key").value == "") {
-                document.getElementById("query-output").innerHTML = "Please enter API Key";
-                return false;
-            }
             if (document.getElementById("custom-query").value == "") {
                 document.getElementById("query-output").innerHTML = "Please enter full query";
                 return false;
@@ -451,7 +506,37 @@ function map_data_to_schema(query_data, resp, tableinfo) {
                 index = index + 1;
             }
             return table_data;
-        default:
+        case "sector":
+            for (rank in resp) {
+                if (index > 0) {
+                    for (sector in resp[rank]) {
+                        table_data.push({
+                            "rank": rank,
+                            "energy": resp[rank]["Energy"],
+                            "information_technology": resp[rank]["Information Technology"],
+                            "real_estate": resp[rank]["Real Estate"],
+                            "health_care": resp[rank]["Health Care"],
+                            "communication_services": resp[rank]["Communication Services"],
+                            "consumer_staples": resp[rank]["Consumer Staples"],
+                            "industrials": resp[rank]["Industrials"],
+                            "consumer_discretionary": resp[rank]["Consumer Discretionary"],
+                            "materials": resp[rank]["Materials"],
+                            "utilities": resp[rank]["Utilities"],
+                            "financials": resp[rank]["Financials"],
+                        });
+                    }
+                }
+                index = index + 1;
+            }
+            return table_data;
+        // default:
+        //     for (dict in resp) {
+        //         if (Object.keys(resp).indexOf("Meta Data") >= 0) {
+        //             console.log("one");
+        //         }
+        //     }
+        //     break;
+        // TODO implement schema that gets created on the fly
 
     }
 }
@@ -479,7 +564,11 @@ function create_apicall(tableInfo, query_data) {
         case "technical-indicator":
             return baseurl + query_data.function_key + "&symbol=" + tableInfo.id.split("_")[0] + query_data.indicator_arguments + "&apikey=" + query_data.api_key;
             break;
+        case "sector":
+            return baseurl + query_data.function_key + "&apikey=" + query_data.api_key;
+            break;
         default:
+            return query_data.custom_query;
             break;
     }
 }
