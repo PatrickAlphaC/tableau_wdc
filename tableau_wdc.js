@@ -7,8 +7,6 @@
         // Get the list of symbols
         var list_of_schemas = new Array();
         query_data = JSON.parse(tableau.connectionData);
-
-
         switch (JSON.parse(tableau.connectionData).type) {
             case "stock-timeseries":
                 var symbol_list = query_data.symbol_list.split(",");
@@ -120,24 +118,20 @@
                 break;
             case "technical-indicator":
                 var symbol_list = query_data.symbol_list.split(",");
-                for (symbol in symbol_list) {
-                    var indicator_columns = [{
-                        id: "symbol",
-                        alias: "symbol",
-                        dataType: tableau.dataTypeEnum.string
-                    }, {
-                        id: "timestamp",
-                        dataType: tableau.dataTypeEnum.datetime
-                    }, {
-                        id: query_data.function_key,
-                        dataType: tableau.dataTypeEnum.string
-                    }, {
-                        id: "arguments",
-                        dataType: tableau.dataTypeEnum.string
-                    }];
+                if (query_data.union_value != 'union') {
+                    for (symbol in symbol_list) {
+                        var indicator_columns = get_indicator_schema();
+                        list_of_schemas.push({
+                            id: symbol_list[symbol] + "_" + query_data.function_key,
+                            alias: query_data.function_key + " for " + symbol_list[symbol],
+                            columns: indicator_columns,
+                        })
+                    }
+                } else {
+                    var indicator_columns = get_indicator_schema();
                     list_of_schemas.push({
-                        id: symbol_list[symbol] + "_" + query_data.function_key,
-                        alias: query_data.function_key + " for " + symbol_list[symbol],
+                        id: "ticker_list_for_" + query_data.function_key,
+                        alias: query_data.function_key + " for ticker list",
                         columns: indicator_columns,
                     })
                 }
@@ -211,7 +205,7 @@
     myConnector.getData = function (table, doneCallback) {
         var query_data = JSON.parse(tableau.connectionData);
         if (query_data.union_value != 'union') {
-            var apicall = create_apicall(query_data, table.tableInfo.id);
+            var apicall = create_apicall(query_data, table.tableInfo.id.split("_")[0]);
             $.getJSON(apicall, function (resp) {
                 var tableData = [];
                 // Could and should this code be refactored?.... Yes.... Yes it should be 
@@ -621,5 +615,22 @@ function get_stock_schema() {
         id: "volume",
         alias: "volume",
         dataType: tableau.dataTypeEnum.float
+    }];
+}
+
+function get_indicator_schema() {
+    return indicator_columns = [{
+        id: "symbol",
+        alias: "symbol",
+        dataType: tableau.dataTypeEnum.string
+    }, {
+        id: "timestamp",
+        dataType: tableau.dataTypeEnum.datetime
+    }, {
+        id: query_data.function_key,
+        dataType: tableau.dataTypeEnum.string
+    }, {
+        id: "arguments",
+        dataType: tableau.dataTypeEnum.string
     }];
 }
