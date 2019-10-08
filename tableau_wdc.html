@@ -105,6 +105,11 @@
                     <div class="form-inline">
                         <input type="text" class="form-control" id="symbol-list" placeholder="MSFT,AAPL,GOOGL">
                     </div>
+                    <div>
+                        <input type="radio" name="union-choice" value="union" checked="checked">Union<br>
+                        <input type="radio" name="union-choice" value="separate">Separate<br>
+                    </div>
+
                     <button type="button" id="stock-submit-btn" class="btn btn-success" style="margin: 10px;">Get Stock
                         Data</button>
                 </form>
@@ -190,6 +195,10 @@
                     <div id="disclaimer" class="disclaimer">Please see the <a
                             href="https://www.alphavantage.co/documentation/" target="_blank">documentation</a> for
                         more information about arguments.
+                    </div>
+                    <div>
+                        <input type="radio" name="union-choice-ti" value="union" checked="checked">Union<br>
+                        <input type="radio" name="union-choice-ti" value="separate">Separate<br>
                     </div>
                     <button type="button" id="indicator-submit-btn" class="btn btn-success" style="margin: 10px;">Get
                         Indicator

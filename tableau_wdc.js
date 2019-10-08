@@ -12,41 +12,25 @@
         switch (JSON.parse(tableau.connectionData).type) {
             case "stock-timeseries":
                 var symbol_list = query_data.symbol_list.split(",");
-                for (symbol in symbol_list) {
-                    var timeseries_columns = [{
-                        id: "symbol",
-                        alias: "symbol",
-                        dataType: tableau.dataTypeEnum.string
-                    }, {
-                        id: "timestamp",
-                        dataType: tableau.dataTypeEnum.datetime
-                    }, {
-                        id: "open",
-                        alias: "open",
-                        dataType: tableau.dataTypeEnum.float
-                    }, {
-                        id: "high",
-                        alias: "high",
-                        dataType: tableau.dataTypeEnum.float
-                    }, {
-                        id: "low",
-                        alias: "low",
-                        dataType: tableau.dataTypeEnum.float
-                    }, {
-                        id: "close",
-                        alias: "close",
-                        dataType: tableau.dataTypeEnum.float
-                    }, {
-                        id: "volume",
-                        alias: "volume",
-                        dataType: tableau.dataTypeEnum.float
-                    }];
+                if (query_data.union_value != 'union') {
+                    for (symbol in symbol_list) {
+                        var timeseries_columns = get_stock_schema();
+                        list_of_schemas.push({
+                            id: symbol_list[symbol],
+                            alias: "Timeseries for " + symbol_list[symbol],
+                            columns: timeseries_columns,
+                        })
+                    }
+                }
+                else {
+                    var timeseries_columns = get_stock_schema();
                     list_of_schemas.push({
-                        id: symbol_list[symbol],
-                        alias: "Timeseries for " + symbol_list[symbol],
+                        id: 'union_table',
+                        alias: "Timeseries for tickers",
                         columns: timeseries_columns,
                     })
                 }
+
                 break;
             case "forex":
                 var forex_columns = [{
@@ -226,15 +210,46 @@
     // Download the data
     myConnector.getData = function (table, doneCallback) {
         var query_data = JSON.parse(tableau.connectionData);
-        apicall = create_apicall(table.tableInfo, query_data);
-        $.getJSON(apicall, function (resp) {
-            var tableData = [];
-            var index = 0;
-            // Could and should this code be refactored?.... Yes.... Yes it should be 
-            var table_data = map_data_to_schema(query_data, resp, table.tableInfo, myConnector);
-            table.appendRows(table_data);
-            doneCallback();
-        });
+        if (query_data.union_value != 'union') {
+            var apicall = create_apicall(query_data, table.tableInfo.id);
+            $.getJSON(apicall, function (resp) {
+                var tableData = [];
+                // Could and should this code be refactored?.... Yes.... Yes it should be 
+                var table_data = map_data_to_schema(query_data, resp, table.tableInfo.id);
+                table.appendRows(table_data);
+                doneCallback();
+            });
+        }
+        else {
+            var symbol_list = query_data.symbol_list.split(",");
+            var tasks = [];
+            // This does the asynchronization
+            $.each(symbol_list, function (index, symbol) {
+                var apicall = create_apicall(query_data, symbol);
+                var task = $.getJSON(apicall, function (resp) {
+                    var tableData = [];
+                    // Could and should this code be refactored?.... Yes.... Yes it should be 
+                    var table_data = map_data_to_schema(query_data, resp, symbol);
+                    table.appendRows(table_data);
+                    doneCallback();
+                })
+                tasks.push(task);
+                $.when(tasks).then(function () {
+                    // do nothing
+                })
+            })
+            // for (symbol in symbol_list) {
+            //     var apicall = create_apicall(query_data, symbol_list[symbol]);
+            //     $.getJSON(apicall, function (resp) {
+            //         console.log(apicall);
+            //         var tableData = [];
+            //         // Could and should this code be refactored?.... Yes.... Yes it should be 
+            //         var table_data = map_data_to_schema(query_data, resp, symbol_list[symbol]);
+            //         table.appendRows(table_data);
+            //         doneCallback();
+            //     });
+            // } &interval=weekly&time_period=10&series_type=open
+        }
     };
 
     tableau.registerConnector(myConnector);
@@ -248,6 +263,7 @@
                     type: "stock-timeseries",
                     function_key: $('#function-key').val().trim(),
                     cadence: $('#intraday-cadence').val().trim(),
+                    union_value: $('input[name=union-choice]:checked').val(),
                 };
                 var connection_name = query_data.symbol_list + " Time Series";
                 send_tableau(query_data, connection_name);
@@ -268,6 +284,7 @@
                     type: type,
                     function_key: $('#function-key-fx').val().trim(),
                     cadence: $('#intraday-cadence-fx').val().trim(),
+                    union_value: 'null',
                 };
                 var connection_name = query_data.from_currency + " " + query_data.to_currency;
                 send_tableau(query_data, connection_name);
@@ -283,6 +300,7 @@
                     api_key: $('#api-key').val().trim().replace(/\s/g, ''),
                     type: "technical-indicator",
                     symbol_list: $('#symbol-list-indicators').val().trim().replace(/\s/g, ''),
+                    union_value: $('input[name=union-choice-ti]:checked').val(),
                 };
                 var connection_name = query_data.function_key;
                 send_tableau(query_data, connection_name);
@@ -296,6 +314,7 @@
                     api_key: $('#api-key').val().trim().replace(/\s/g, ''),
                     type: "sector",
                     function_key: "SECTOR",
+                    union_value: 'null',
                 };
                 var connection_name = "Sector Performance";
                 send_tableau(query_data, connection_name);
@@ -309,7 +328,8 @@
                     custom_query: $('#custom-query').val().trim().replace(/\s/g, ''),
                     api_key: $('#api-key').val().trim().replace(/\s/g, ''),
                     type: "custom-query",
-                    function_key: "NULL",
+                    function_key: "null",
+                    union_value: 'null',
                 };
                 var connection_name = "Custom Query";
                 send_tableau(query_data, connection_name);
@@ -416,7 +436,7 @@ $(document).ready(function () {
     });
 });
 
-function map_data_to_schema(query_data, resp, tableinfo) {
+function map_data_to_schema(query_data, resp, symbol_or_id) {
     var table_data = [];
     var index = 0;
     // Could and should this code be refactored?.... Yes.... Yes it should be 
@@ -426,7 +446,7 @@ function map_data_to_schema(query_data, resp, tableinfo) {
                 if (index == 1) {
                     for (timeseries in resp[data_metadata]) {
                         table_data.push({
-                            "symbol": tableinfo.id,
+                            "symbol": symbol_or_id,
                             "timestamp": timeseries,
                             "open": resp[data_metadata][timeseries]["1. open"],
                             "high": resp[data_metadata][timeseries]["2. high"],
@@ -492,13 +512,13 @@ function map_data_to_schema(query_data, resp, tableinfo) {
                     // WHY CAN'T I DO THIS?? CUZ TABLEAU IS RUN ON OOOOLLLLLDDDD JAVASCRIPT
                     for (timeseries in resp[data_metadata]) {
                         // table_data.push({
-                        //     "symbol": tableinfo.id.split("_")[0],
+                        //     "symbol": symbol_or_id.split("_")[0],
                         //     "timestamp": timeseries,
                         //     [query_data.function_key]: resp[data_metadata][timeseries][query_data.function_key],
                         //     "arguments": query_data.indicator_arguments,
                         // });
                         var putin = {};
-                        putin["symbol"] = tableinfo.id.split("_")[0];
+                        putin["symbol"] = symbol_or_id.split("_")[0];
                         putin["timestamp"] = timeseries;
                         putin[query_data.function_key] = resp[data_metadata][timeseries][query_data.function_key];
                         putin["arguments"] = query_data.indicator_arguments;
@@ -541,7 +561,7 @@ function map_data_to_schema(query_data, resp, tableinfo) {
     }
 }
 
-function create_apicall(tableInfo, query_data) {
+function create_apicall(query_data, symbol) {
     var baseurl = "https://www.alphavantage.co/query?function=";
     var cadence = "";
     if (query_data.function_key.indexOf("INTRADAY") !== -1) {
@@ -549,7 +569,7 @@ function create_apicall(tableInfo, query_data) {
     }
     switch (query_data.type) {
         case "stock-timeseries":
-            return baseurl + query_data.function_key + "&symbol=" + tableInfo.id + cadence + "&apikey=" + query_data.api_key;
+            return baseurl + query_data.function_key + "&symbol=" + symbol + cadence + "&apikey=" + query_data.api_key;
             break;
         case "forex":
             var from_symbol = "&from_symbol=";
@@ -562,7 +582,7 @@ function create_apicall(tableInfo, query_data) {
             return baseurl + query_data.function_key + from_symbol + query_data.from_currency + to_symbol + query_data.to_currency + cadence + "&apikey=" + query_data.api_key;
             break;
         case "technical-indicator":
-            return baseurl + query_data.function_key + "&symbol=" + tableInfo.id.split("_")[0] + query_data.indicator_arguments + "&apikey=" + query_data.api_key;
+            return baseurl + query_data.function_key + "&symbol=" + symbol + query_data.indicator_arguments + "&apikey=" + query_data.api_key;
             break;
         case "sector":
             return baseurl + query_data.function_key + "&apikey=" + query_data.api_key;
@@ -571,4 +591,35 @@ function create_apicall(tableInfo, query_data) {
             return query_data.custom_query;
             break;
     }
+}
+
+function get_stock_schema() {
+    return [{
+        id: "symbol",
+        alias: "symbol",
+        dataType: tableau.dataTypeEnum.string
+    }, {
+        id: "timestamp",
+        dataType: tableau.dataTypeEnum.datetime
+    }, {
+        id: "open",
+        alias: "open",
+        dataType: tableau.dataTypeEnum.float
+    }, {
+        id: "high",
+        alias: "high",
+        dataType: tableau.dataTypeEnum.float
+    }, {
+        id: "low",
+        alias: "low",
+        dataType: tableau.dataTypeEnum.float
+    }, {
+        id: "close",
+        alias: "close",
+        dataType: tableau.dataTypeEnum.float
+    }, {
+        id: "volume",
+        alias: "volume",
+        dataType: tableau.dataTypeEnum.float
+    }];
 }
