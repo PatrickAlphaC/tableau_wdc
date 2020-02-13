@@ -489,14 +489,7 @@ function map_data_to_schema(query_data, resp, tableinfo) {
         case "technical-indicator":
             for (data_metadata in resp) {
                 if (index == 1) {
-                    // WHY CAN'T I DO THIS?? CUZ TABLEAU IS RUN ON OOOOLLLLLDDDD JAVASCRIPT
                     for (timeseries in resp[data_metadata]) {
-                        // table_data.push({
-                        //     "symbol": tableinfo.id.split("_")[0],
-                        //     "timestamp": timeseries,
-                        //     [query_data.function_key]: resp[data_metadata][timeseries][query_data.function_key],
-                        //     "arguments": query_data.indicator_arguments,
-                        // });
                         var putin = {};
                         putin["symbol"] = tableinfo.id.split("_")[0];
                         putin["timestamp"] = timeseries;
@@ -529,14 +522,6 @@ function map_data_to_schema(query_data, resp, tableinfo) {
                 index = index + 1;
             }
             return table_data;
-        // default:
-        //     for (dict in resp) {
-        //         if (Object.keys(resp).indexOf("Meta Data") >= 0) {
-        //             console.log("one");
-        //         }
-        //     }
-        //     break;
-        // TODO implement schema that gets created on the fly
 
     }
 }
@@ -549,20 +534,20 @@ function create_apicall(tableInfo, query_data) {
     }
     switch (query_data.type) {
         case "stock-timeseries":
-            return baseurl + query_data.function_key + "&symbol=" + tableInfo.id + cadence + "&apikey=" + query_data.api_key;
+            return baseurl + query_data.function_key + "&symbol=" + tableInfo.id + cadence + "&outputsize=full&apikey=" + query_data.api_key;
             break;
         case "forex":
             var from_symbol = "&from_symbol=";
             var to_symbol = "&to_symbol=";
-            return baseurl + query_data.function_key + from_symbol + query_data.from_currency + to_symbol + query_data.to_currency + cadence + "&apikey=" + query_data.api_key;
+            return baseurl + query_data.function_key + from_symbol + query_data.from_currency + to_symbol + query_data.to_currency + cadence + "&outputsize=full&apikey=" + query_data.api_key;
             break;
         case "crypto":
             var from_symbol = "&symbol=";
             var to_symbol = "&market=";
-            return baseurl + query_data.function_key + from_symbol + query_data.from_currency + to_symbol + query_data.to_currency + cadence + "&apikey=" + query_data.api_key;
+            return baseurl + query_data.function_key + from_symbol + query_data.from_currency + to_symbol + query_data.to_currency + cadence + "&outputsize=full&apikey=" + query_data.api_key;
             break;
         case "technical-indicator":
-            return baseurl + query_data.function_key + "&symbol=" + tableInfo.id.split("_")[0] + query_data.indicator_arguments + "&apikey=" + query_data.api_key;
+            return baseurl + query_data.function_key + "&symbol=" + tableInfo.id.split("_")[0] + query_data.indicator_arguments + "&outputsize=full&apikey=" + query_data.api_key;
             break;
         case "sector":
             return baseurl + query_data.function_key + "&apikey=" + query_data.api_key;
